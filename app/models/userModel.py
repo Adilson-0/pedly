@@ -1,6 +1,11 @@
-from __future__ import annotations
 from sqlmodel import Field, SQLModel, Relationship
-from typing import List, Optional
+from typing import Optional, List, TYPE_CHECKING
+from app.schemas.userSchema import UserSchema
+
+if(TYPE_CHECKING):
+    from .clientModel import Client
+    from .productModel import Product
+    from .orderModel import Order
 
 class User(SQLModel, table=True):
     id : Optional[int] = Field(default=None, primary_key=True)
@@ -13,3 +18,13 @@ class User(SQLModel, table=True):
     products : List["Product"] = Relationship(back_populates="owner_product", cascade_delete=True)
     orders: List["Order"] = Relationship(back_populates="owner_order", cascade_delete=True)
     clients : List["Client"] = Relationship(back_populates="owner_client", cascade_delete=True)
+
+    @staticmethod
+    def userModelToSchema(user : UserSchema):
+        return User(
+            username = user.username,
+            password = user.password,
+            email = user.email,
+            complete_name = user.complete_name,
+            phone = user.phone
+        )
